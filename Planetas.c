@@ -5,22 +5,36 @@
 float get_gravedad(float masa);
 
 int main(void){
-	int t = 100;
-	print_algo(t);	
-	//int var;
-	//FILE *in;
-	//char filename[100]="coordinates.csv";
-
+	//int t = 10;
+	//print_algo(t);	
+	FILE *in;
+	char Planeta[100];
+	//char *nombre;
+	float masa, px, py, pz, velx, vely, velz;
+	int i;
+	char filename[100]="coordinates.csv";
+	//char *split_CuerpoCeleste;
+	//constant char delimiter;
+	//delimiter =',';
 	//in = fopen(filename, "r");
-	//for(i=0;i<20;i++){
-	//	fscanf(in, "%d\n", &var);
-	//	printf("value = %d\n",var);
-	//}
-	//fclose(in);
+	for(i=0;i<10;i++){
+	
+		//split_CuerpoCeleste = strtok(CuerpoCeleste, delimiter); 
+
+		//while(split_CuerpoCeleste != NULL)
+		//{
+
+		//}
+		//masa, px, py, pz, velx, vely, velz = strtod(CuerpoCeleste, &nombre);
+		fscanf(in, "%s, %f, %f, %f, %f, %f, %f, %f\n", &Planeta, &masa, &px, &py, &pz, &velx, &vely, &velz);
+		printf("value = %s\n",Planeta);
+	}
+	fclose(in);
 	return 0;
 	}
 
-void print_algo(t){
+
+/*void print_algo(t){
 	int i;
 	float masa;
 	float poxMerc[t];
@@ -44,11 +58,10 @@ void print_algo(t){
 	float vxMerc[0]=0.9768;
 
 	for (i=1; i<t;i++){
-		poxMerc[i]= 
+		poxMerc[i] 
 	}
 	return 0;
 	
 
-}
+}*/
 
-	
