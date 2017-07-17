@@ -10,8 +10,8 @@ puntos= 30
 dx = (b-a)/(puntos)
 dy = (b-a)/(puntos)
 c=1.0
-rx = c*(0.5)/dx
-ry = c*(0.5)/dy
+r = 0.5
+dt = np.sqrt(r)*dx/c
 tiempo = 60
 
 
@@ -19,14 +19,12 @@ x = np.linspace(a,b, puntos)
 y = np.linspace(a,b, puntos)
 
 
-
-
 #Matriz con ampitudes
 amplitud0 = np.zeros((puntos, puntos))
 
 
 #Perturbacion inicial y condiciones iniciales
-amplitud0[int((b-a)/3),int((b-a)/2)]= -0.5
+amplitud0[int((b-a)/3)][int((b-a)/2)]= -0.5
 #En los bordes
 amplitud0[0,:]=0
 amplitud0[:,0]=0
@@ -37,13 +35,14 @@ AInicial = np.copy(amplitud0)
 
 amplitud1 = np.zeros((puntos, puntos))
 #Condicion inicial
-amplitud1[int((b-a)/3),int((b-a)/2)]= -0.5
+amplitud1[int((b-a)/3)][int((b-a)/2)]= -0.5
 
 #i es 1:-1
 #i+1 es 2:
 #i-1 es 0:-2
-for i in range(tiempo+1):
-	amplitud1[1:-1,1:-1]= 2*amplitud0[1:-1,1:-1]+ rx*rx/2*(amplitud0[2:,1:-1]-2*amplitud0[1:-1,1:-1]+amplitud0[0:-2,1:-1]) + ry*ry/2*(amplitud0[1:-1,2:]-2*amplitud0[1:-1,1:-1]+amplitud0[1:-1, 0:-2]) 
+for i in range(1,puntos-1):
+	for j in range(1,puntos-1):
+		amplitud1[i,j]= amplitud0[i,j]+ r*r/2*(amplitud0[i+1,j]-2*amplitud0[i,j]+amplitud0[0:-2,1:-1]) + r*r/2*(amplitud0[1:-1,2:]-2*amplitud0[1:-1,1:-1]+amplitud0[1:-1, 0:-2]) 
 
 	amplitud0[0,:]=0
 	amplitud0[:,0]=0
@@ -60,26 +59,11 @@ time=[]
 t=0
 AinTime.append(amplitud0)
 AinTime.append(amplitud1)
-#while t<tiempo:
-#	time.append(t)
-#	for i in range(tiempo+1):
-#		amplitudFinal[1:-1,1:-1]=2*(1-rx*rx)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+rx*rx*(amplitud1[2:,1:-1]+amplitud1[0:-2,1:-1]) + 2*(1-ry*ry)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+ry*ry*(amplitud1[1:-1,2:]+amplitud1[1:-1,0:-2])
-	
-#	amplitudFinal[0,:]=0
-#	amplitudFinal[:,0]=0
-#	amplitudFinal[-1,:]=0
-#	amplitudFinal[:,-1]=0
-	
-#	amplitud0 = np.copy(amplitud1)
-#	amplitud1 = np.copy(amplitudFinal)
-#	AinTime.append(amplitudFinal)
-#	t+=1
-
-#Intento de otra manera
 while t<tiempo:
 	time.append(t)
 	for i in range(1,puntos-1):
-		amplitudFinal[i,i]=2*(1-rx*rx)*amplitud1[i,i]-amplitud0[i,i]+rx*rx*(amplitud1[i+1,i]+amplitud1[i-1,i]) + 2*(1-ry*ry)*amplitud1[i,i]-amplitud0[i,i]+ry*ry*(amplitud1[i,i+1]+amplitud1[i,i-1])
+		for j in range(1,puntos-1)
+		amplitudFinal[1:-1,1:-1]=2*(1-rx*rx)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+rx*rx*(amplitud1[2:,1:-1]+amplitud1[0:-2,1:-1]) + 2*(1-ry*ry)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+ry*ry*(amplitud1[1:-1,2:]+amplitud1[1:-1,0:-2])
 	
 	amplitudFinal[0,:]=0
 	amplitudFinal[:,0]=0
@@ -92,10 +76,11 @@ while t<tiempo:
 	t+=1
 
 
+
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 X,Y = np.meshgrid(x,y)
-surf = ax.plot_surface(X,Y, AinTime[2], color='c', cmap = cm.coolwarm)
+surf = ax.plot_surface(X,Y, AInicial, color='c', cmap = cm.coolwarm)
 fig.colorbar(surf, shrink =0.5, aspect = 5)
 ax.set_xlim(-15,15)
 ax.set_ylim(15,-15)
