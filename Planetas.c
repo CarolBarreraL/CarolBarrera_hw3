@@ -58,25 +58,29 @@ int main(void){
 	float *Velx = malloc(10*tiempo*sizeof(float));
 	float *Vely = malloc(10*tiempo*sizeof(float));
 	float *Velz = malloc(10*tiempo*sizeof(float));
-	float *ax = malloc(10*tiempo*sizeof(float));
-	float *ay = malloc(10*tiempo*sizeof(float));
-	float *az = malloc(10*tiempo*sizeof(float));
 	int i;
 	char filename[100]="coordinatesMODIFICADO.csv";
 	in = fopen(filename, "r");
 	for(i=0;i<10;i++){
 	
-		fscanf(in, " %f, %f, %f, %f, %f, %f, %f\n", &masa[i], &px[i], &py[i], &pz[i], &vx[i], &vy[i], &vz[i]);
-		//printf("value = %f\n",px);
+		fscanf(in, " %e, %e, %e, %e, %e, %e, %e\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
 
 	}
-	printf("posiciones=%f\n", px[0]);
+	
 	fclose(in);
+
 	return 0;
 	}
 
 
+int ind(i,j)
+{
+	int num;
+	num = 10*i + j;
+	return num;
+}
 
+float Acelereadeje(i,j,m):
 
 
 
