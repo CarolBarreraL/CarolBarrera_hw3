@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #define G 39.4784176044
 
 float get_gravedad(float masa);
@@ -41,13 +42,10 @@ int main(void){
 	//print_algo(t);	
 	FILE *in;
 	float masa[10];
-	float px[10];
-	float py[10];
-	float pz[10];
-	float vx[10];
-	float vy[10];
-	float vz[10];
 	int tiempo = 1000;
+	int t;
+	int p;
+	float dt = 0.01;
 	//Para pedir memoria para las listas y matrices
 	float *velmedx = malloc(10*sizeof(float));
 	float *velmedy = malloc(10*sizeof(float));
@@ -66,8 +64,15 @@ int main(void){
 		fscanf(in, " %e, %e, %e, %e, %e, %e, %e\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
 
 	}
-	
 	fclose(in);
+	
+	for(t=0;t<tiempo;t++)
+	{
+		for(p=0;p<10;p++)
+		{
+			
+		}
+	}
 
 	return 0;
 	}
@@ -80,7 +85,55 @@ int ind(i,j)
 	return num;
 }
 
-float Acelereadeje(i,j,m):
+
+float Acelereadex(int i, int j,float m, float *x, float *y, float *z)
+{
+	int ii;
+	float sum=0;
+	float r;
+	
+	for(ii=0;ii<10;ii++){
+		
+		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
+		if(ii!=i){
+			sum += G*m[ind(ii,j)]*(x[ind(i,j)]-x[ind(ii,j)])/r;
+		}
+	}
+	return sum;
+}
+
+float Acelereadey(int i, int j,float m, float *x, float *y, float *z)
+{
+	int ii;
+	float sum=0;
+	float r;
+	
+	for(ii=0;ii<10;ii++){
+		
+		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
+		if(ii!=i){
+			sum += G*m[ind(ii,j)]*(y[ind(i,j)]-y[ind(ii,j)])/r;
+		}
+	}
+	return sum;
+}
+
+float Acelereadez(int i, int j,float m, float *x, float *y, float *z)
+{
+	int ii;
+	float sum=0;
+	float r;
+	
+	for(ii=0;ii<10;ii++){
+		
+		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
+		if(ii!=i){
+			sum += G*m[ind(ii,j)]*(z[ind(i,j)]-z[ind(ii,j)])/r;
+		}
+	}
+	return sum;
+}
+
 
 
 
