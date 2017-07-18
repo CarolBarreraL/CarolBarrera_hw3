@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <math.h>
 #define G 39.4784176044
+#define t 10000
+
 
 float get_gravedad(float masa);
 
@@ -42,10 +44,9 @@ int main(void){
 	//print_algo(t);	
 	FILE *in;
 	float masa[10];
-	int tiempo = 1000;
 	int t;
 	int p;
-	float dt = 0.01;
+	float dt = 0.001;
 	//Para pedir memoria para las listas y matrices
 	float *velmedx = malloc(10*sizeof(float));
 	float *velmedy = malloc(10*sizeof(float));
@@ -61,18 +62,37 @@ int main(void){
 	in = fopen(filename, "r");
 	for(i=0;i<10;i++){
 	
-		fscanf(in, " %e, %e, %e, %e, %e, %e, %e\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
+		fscanf(in, " %f, %f, %f, %f, %f, %f, %f\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
 
 	}
 	fclose(in);
 	
-	for(t=0;t<tiempo;t++)
+	float *Ax = malloc(10*tiempo*sizeof(float));
+	float *Ay = malloc(10*tiempo*sizeof(float));
+	float *Az = malloc(10*tiempo*sizeof(float));
+
+	for(p=0;p<10;p++)
 	{
-		for(p=0;p<10;p++)
-		{
-			
-		}
+		Ax[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posx[ind(p,0)], Posy[ind(p,0)], Posz[ind(p,0)]);
+		Ay[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posy[ind(p,0)], Posx[ind(p,0)], Posz[ind(p,0)]);
+		Az[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posz[ind(p,0)], Posx[ind(p,0)], Posy[ind(p,0)]);
+		printf("Aceleracion=%f\n", Ax[ind(1,0)]);
 	}
+
+
+	//for(t=1;t<tiempo;t++)
+	//{	
+		/*Iniciales*/
+	//	for(p=0;p<10;p++)
+	//	{
+	//		Acelereadeje(p,t,masa[ind(p,t)], Posx[ind(p,t)], Posy[ind(p,t)],Posz[ind(p,t)]);
+	//	}
+	//	for(p=0;p<10;p++)
+	//	{
+			
+	//	}
+
+	//}
 
 	return 0;
 	}
@@ -81,12 +101,12 @@ int main(void){
 int ind(i,j)
 {
 	int num;
-	num = 10*i + j;
+	num = t*i + j;
 	return num;
 }
 
 
-float Acelereadex(int i, int j,float m, float *x, float *y, float *z)
+float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra)
 {
 	int ii;
 	float sum=0;
@@ -94,48 +114,12 @@ float Acelereadex(int i, int j,float m, float *x, float *y, float *z)
 	
 	for(ii=0;ii<10;ii++){
 		
-		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
+		r = pow((pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0)),1.5);
 		if(ii!=i){
-			sum += G*m[ind(ii,j)]*(x[ind(i,j)]-x[ind(ii,j)])/r;
+			sum += G*m[ind(ii,j)]*(midim[ind(i,j)]-midim[ind(ii,j)])/r;
 		}
 	}
 	return sum;
 }
-
-float Acelereadey(int i, int j,float m, float *x, float *y, float *z)
-{
-	int ii;
-	float sum=0;
-	float r;
-	
-	for(ii=0;ii<10;ii++){
-		
-		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
-		if(ii!=i){
-			sum += G*m[ind(ii,j)]*(y[ind(i,j)]-y[ind(ii,j)])/r;
-		}
-	}
-	return sum;
-}
-
-float Acelereadez(int i, int j,float m, float *x, float *y, float *z)
-{
-	int ii;
-	float sum=0;
-	float r;
-	
-	for(ii=0;ii<10;ii++){
-		
-		r = pow((pow((x[ind(i,j)]-x[ind(ii,j)]),2.0) + pow((y[ind(i,j)]-y[ind(ii,j)]),2.0) + pow((z[ind(i,j)]-z[ind(ii,j)]),2.0)),1.5);
-		if(ii!=i){
-			sum += G*m[ind(ii,j)]*(z[ind(i,j)]-z[ind(ii,j)])/r;
-		}
-	}
-	return sum;
-}
-
-
-
-
 
 
