@@ -42,7 +42,7 @@ amplitud1[int((b-a)/3)][int((b-a)/2)]= -0.5
 #i-1 es 0:-2
 for i in range(1,puntos-1):
 	for j in range(1,puntos-1):
-		amplitud1[i,j]= amplitud0[i,j]+ r*r/2*(amplitud0[i+1,j]-2*amplitud0[i,j]+amplitud0[0:-2,1:-1]) + r*r/2*(amplitud0[1:-1,2:]-2*amplitud0[1:-1,1:-1]+amplitud0[1:-1, 0:-2]) 
+		amplitud1[i,j]= amplitud0[i,j]+ r*r/2*(amplitud0[i+1,j]-2*amplitud0[i,j]+amplitud0[i-1,j]) + r*r/2*(amplitud0[i,j+1]-2*amplitud0[i,j]+amplitud0[i, j-1]) 
 
 	amplitud0[0,:]=0
 	amplitud0[:,0]=0
@@ -62,8 +62,8 @@ AinTime.append(amplitud1)
 while t<tiempo:
 	time.append(t)
 	for i in range(1,puntos-1):
-		for j in range(1,puntos-1)
-		amplitudFinal[1:-1,1:-1]=2*(1-rx*rx)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+rx*rx*(amplitud1[2:,1:-1]+amplitud1[0:-2,1:-1]) + 2*(1-ry*ry)*amplitud1[1:-1,1:-1]-amplitud0[1:-1,1:-1]+ry*ry*(amplitud1[1:-1,2:]+amplitud1[1:-1,0:-2])
+		for j in range(1,puntos-1):
+		amplitudFinal[1:-1,1:-1]=2*amplitud1[i,j]-amplitud0[i,j]+r*(amplitud1[i+1,j]+amplitud1[i-1,j]) + r*(amplitud1[i,j+1]+amplitud1[i,j-1])
 	
 	amplitudFinal[0,:]=0
 	amplitudFinal[:,0]=0
@@ -80,7 +80,7 @@ while t<tiempo:
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 X,Y = np.meshgrid(x,y)
-surf = ax.plot_surface(X,Y, AInicial, color='c', cmap = cm.coolwarm)
+surf = ax.plot_surface(X,Y, AinTime[10], color='c', cmap = cm.coolwarm)
 fig.colorbar(surf, shrink =0.5, aspect = 5)
 ax.set_xlim(-15,15)
 ax.set_ylim(15,-15)
