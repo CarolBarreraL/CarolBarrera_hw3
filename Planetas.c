@@ -3,11 +3,10 @@
 #include <stdio.h>
 #include <math.h>
 #define G 39.4784176044
-#define t 10000
+#define time 10000
 
-
-float get_gravedad(float masa);
-
+float Acelereadeje(int i, int j,float m, float midim, float otra, float ootra);
+int ind(int i, int j );
 
 /*int main(void){
 	//int t = 10;
@@ -43,21 +42,23 @@ int main(void){
 	//int t = 10;
 	//print_algo(t);	
 	FILE *in;
-	float masa[10];
 	int t;
 	int p;
+	int i;
 	float dt = 0.001;
-	//Para pedir memoria para las listas y matrices
+	
+	//Para pedir memoria para las listas y 'matrices'
+	float *masa = malloc(10*sizeof(float));
 	float *velmedx = malloc(10*sizeof(float));
 	float *velmedy = malloc(10*sizeof(float));
 	float *velmedz = malloc(10*sizeof(float));
-	float *Posx = malloc(10*tiempo*sizeof(float));
-	float *Posy = malloc(10*tiempo*sizeof(float));
-	float *Posz = malloc(10*tiempo*sizeof(float));
-	float *Velx = malloc(10*tiempo*sizeof(float));
-	float *Vely = malloc(10*tiempo*sizeof(float));
-	float *Velz = malloc(10*tiempo*sizeof(float));
-	int i;
+	float *Posx = malloc(10*time*sizeof(float));
+	float *Posy = malloc(10*time*sizeof(float));
+	float *Posz = malloc(10*time*sizeof(float));
+	float *Velx = malloc(10*time*sizeof(float));
+	float *Vely = malloc(10*time*sizeof(float));
+	float *Velz = malloc(10*time*sizeof(float));
+
 	char filename[100]="coordinatesMODIFICADO.csv";
 	in = fopen(filename, "r");
 	for(i=0;i<10;i++){
@@ -67,16 +68,15 @@ int main(void){
 	}
 	fclose(in);
 	
-	float *Ax = malloc(10*tiempo*sizeof(float));
-	float *Ay = malloc(10*tiempo*sizeof(float));
-	float *Az = malloc(10*tiempo*sizeof(float));
+	float Ax[10];
+	float Ay[10];
+	float Az[10];
 
-	for(p=0;p<10;p++)
-	{
-		Ax[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posx[ind(p,0)], Posy[ind(p,0)], Posz[ind(p,0)]);
-		Ay[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posy[ind(p,0)], Posx[ind(p,0)], Posz[ind(p,0)]);
-		Az[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posz[ind(p,0)], Posx[ind(p,0)], Posy[ind(p,0)]);
-		printf("Aceleracion=%f\n", Ax[ind(1,0)]);
+	for(p=0;p<10;p++){
+		Ax[p]= Acelereadeje(p,0,masa[i], Posx[i], Posy[i], Posz[i]);
+		//Ay[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posy[ind(p,0)], Posx[ind(p,0)], Posz[ind(p,0)]);
+		//Az[ind(p,0)]= Acelereadeje(p,0,masa[ind(p,0)], Posz[ind(p,0)], Posx[ind(p,0)], Posy[ind(p,0)]);
+		printf("Aceleracion=%f\n", Ax[3]);
 	}
 
 
@@ -98,16 +98,14 @@ int main(void){
 	}
 
 
-int ind(i,j)
-{
+int ind(int i, int j){
 	int num;
-	num = t*i + j;
+	num = time*i + j;
 	return num;
 }
 
 
-float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra)
-{
+float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra){
 	int ii;
 	float sum=0;
 	float r;
