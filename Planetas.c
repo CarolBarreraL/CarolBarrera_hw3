@@ -3,48 +3,20 @@
 #include <stdio.h>
 #include <math.h>
 #define G 39.4784176044
-#define time 3120 /*Tiempo teniendo mi dt en meses y para calcular 260 años*/
+#define time 26000 /*Tiempo teniendo dependiendo de mi dt*/
 
 float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra);
 int ind(int i, int j );
 
-/*int main(void){
-	//int t = 10;
-	//print_algo(t);	
-	FILE *in;
-	char Dataplaneta[10];
-	float masa, px, py, pz, velx, vely, velz;
-	int i;
-	char filename[100]="coordinates.csv";
-	//char *token_Dataplaneta;
-	//constant char delimiter;
-	//delimiter =',';
-	in = fopen(filename, "r");
-	for(i=0;i<10;i++){
-	
-		fscanf(in, " %s, %f, %f, %f, %f, %f, %f, %f\n", &Dataplaneta, &masa, &px, &py, &pz, &velx, &vely, &velz);
-		printf("value = %s\n",Dataplaneta);
-
-		//token_Dataplaneta = strtok(Dataplaneta, delimiter); 
-
-		/*while(token_Dataplaneta != NULL)
-		{
-			printf("%s\n", token_Dataplaneta);
-			token_Dataplaneta = strtok(NULL, delimiter);
-		}*/
-		
-	//}
-	//fclose(in);
-	//return 0;
-	//}*/
 
 int main(void)
 {
 	FILE *in;
+	int m = 0;
 	int t;
 	int p;
 	int i;
-	float dt = 0.0833333333;
+	float dt = 0.01;
 	
 	//Para pedir memoria para las listas y 'matrices'
 	float masa[10];
@@ -57,66 +29,67 @@ int main(void)
 	float *Velx = malloc(10*time*sizeof(float));
 	float *Vely = malloc(10*time*sizeof(float));
 	float *Velz = malloc(10*time*sizeof(float));
-
+	
 
 	/*Lectura del archivo y guardar datos*/
-	char filename[100]="coordinatesMODIFICADO.csv";
+	int n = 200;
+	char planetas[n];
+	char *token=NULL;
+	const char *delim;
+	delim = ",";
+	int item =0;
+	float val;
+	char filename[100]="coordinates.csv";
 	in = fopen(filename, "r");
-	for(i=0;i<10;i++){
-	
-		fscanf(in, " %f, %f, %f, %f, %f, %f, %f\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
+	while(fgets(planetas, n, in))
+	{
+		token = strtok(planetas, delim);
+		
+			while(token!=NULL)
+			{
+				val = atof(token);
+				if(item==1){masa[m]=val;}
+				else if(item==2){Posx[m]=val;}
+				else if(item==3){Posy[m]=val;}	
+				else if(item==4){Posz[m]=val;}
+				else if(item==5){Velx[m]=val;}
+				else if(item==5){Vely[m]=val;}
+				else if(item==5){Velz[m]=val;}
+				token = strtok(NULL,delim);
+				item ++;
+			}
+			item=0;	
+			m++;
 	}
 	fclose(in);
 
 
-
 	/*Cambio de unidades de la masa*/
 	for(i=0;i<10;i++){
-		float conv = 1.9891e30;
+		float conv = 1.9891E30;
 		masa[i]= masa[i]/conv;
 	}
-	
-	
-	float *Ax = malloc(10*time*sizeof(float));
-	float *Ay = malloc(10*time*sizeof(float));
-	float *Az = malloc(10*time*sizeof(float));
-	
-		
-	/*Aceleraciones iniciales*/
-	for(p=0;p<10;p++){
-		Ax[p]= Acelereadeje(p,0,masa, Posx, Posy, Posz);
-		Ay[p]= Acelereadeje(p,0,masa, Posy, Posx, Posz);
-		Az[p]= Acelereadeje(p,0,masa, Posz, Posx, Posy);
-	}
 
+	
 	/*Metodo de LeapFrog*/
 	for(t=1;t<time;t++)
 	{	
 		for(p=0;p<10;p++)
 		{
-			velmedx[p]= Velx[ind(p,t-1)]+ 0.5*Ax[p]*dt;
-			velmedy[p]= Velx[ind(p,t-1)]+ 0.5*Ay[p]*dt;
-			velmedz[p]= Velx[ind(p,t-1)]+ 0.5*Az[p]*dt;
+			velmedx[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posx, Posy, Posz)*dt;
+			velmedy[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posy, Posx, Posz)*dt;
+			velmedz[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posz, Posx, Posy)*dt;
 
 			Posx[ind(p,t)]= Posx[ind(p,t-1)]+ velmedx[p]*dt;
 			Posy[ind(p,t)]= Posy[ind(p,t-1)]+ velmedy[p]*dt;
 			Posz[ind(p,t)]= Posz[ind(p,t-1)]+ velmedz[p]*dt;
+			
 		}
 		for(p=0;p<10;p++)
 		{
-			/*PROBLEMA AL INTENTAR ACTUALIZAR ACELERACION!*/
-			/*Ax[p]=0;
-			Ay[p]=0;
-			Az[p]=0;
-			for(i=0;i<10;i++){
-				Ax[i]= Acelereadeje(i,t,masa, Posx, Posy, Posz);
-				Ay[i]= Acelereadeje(i,t,masa, Posy, Posx, Posz);
-				Az[i]= Acelereadeje(i,t,masa, Posz, Posx, Posy);
-			}*/
-
-			Velx[ind(p,t+1)]= velmedx[p] + 0.5*Ax[p]*dt;
-			Vely[ind(p,t+1)]= velmedy[p] + 0.5*Ay[p]*dt;
-			Velz[ind(p,t+1)]= velmedz[p] + 0.5*Az[p]*dt;
+			Velx[ind(p,t)]= velmedx[p] + 0.5*Acelereadeje(p,t,masa, Posx, Posy, Posz)*dt;
+			Vely[ind(p,t)]= velmedy[p] + 0.5*Acelereadeje(p,t,masa, Posy, Posx, Posz)*dt;
+			Velz[ind(p,t)]= velmedz[p] + 0.5*Acelereadeje(p,t,masa, Posz, Posx, Posy)*dt;
 		}
 
 	}
@@ -144,10 +117,10 @@ float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootr
 	double r;
 	for(ii=0;ii<10;ii++){
 		
-		r = pow((pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0))+0.01,1.5);
+		r = pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0);
 
 		if(ii!=i){
-			sum += G*m[ind(ii,j)]*(midim[ind(i,j)]-midim[ind(ii,j)])/r;
+			sum += G*m[ii]*(midim[ind(ii,j)]-midim[ind(i,j)])/pow(r,1.5);
 		}
 	}
 	return sum;
