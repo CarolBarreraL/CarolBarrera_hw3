@@ -38,7 +38,8 @@ int ind(int i, int j );
 	//return 0;
 	//}*/
 
-int main(void){
+int main(void)
+{
 	FILE *in;
 	int t;
 	int p;
@@ -64,8 +65,6 @@ int main(void){
 	for(i=0;i<10;i++){
 	
 		fscanf(in, " %f, %f, %f, %f, %f, %f, %f\n", &masa[i], &Posx[i], &Posy[i], &Posz[i], &Velx[i], &Vely[i], &Velz[i]);
-		printf("pos=%f\n", masa[i]);
-
 	}
 	fclose(in);
 
@@ -77,27 +76,55 @@ int main(void){
 		masa[i]= masa[i]/conv;
 	}
 	
-	float *Ax = malloc(10*sizeof(float));
-	float *Ay = malloc(10*sizeof(float));
-	float *Az = malloc(10*sizeof(float));
-
+	
+	float *Ax = malloc(10*time*sizeof(float));
+	float *Ay = malloc(10*time*sizeof(float));
+	float *Az = malloc(10*time*sizeof(float));
+	
+		
+	/*Aceleraciones iniciales*/
 	for(p=0;p<10;p++){
 		Ax[p]= Acelereadeje(p,0,masa, Posx, Posy, Posz);
 		Ay[p]= Acelereadeje(p,0,masa, Posy, Posx, Posz);
 		Az[p]= Acelereadeje(p,0,masa, Posz, Posx, Posy);
 	}
 
-
-
-
-	for(t=1;t<tiempo;t++)
+	/*Metodo de LeapFrog*/
+	for(t=1;t<time;t++)
 	{	
 		for(p=0;p<10;p++)
 		{
-			velmedx[p]= Velx[ind(p,t-1)]+ 0.5*Ax[p]*dt
+			velmedx[p]= Velx[ind(p,t-1)]+ 0.5*Ax[p]*dt;
+			velmedy[p]= Velx[ind(p,t-1)]+ 0.5*Ay[p]*dt;
+			velmedz[p]= Velx[ind(p,t-1)]+ 0.5*Az[p]*dt;
+
+			Posx[ind(p,t)]= Posx[ind(p,t-1)]+ velmedx[p]*dt;
+			Posy[ind(p,t)]= Posy[ind(p,t-1)]+ velmedy[p]*dt;
+			Posz[ind(p,t)]= Posz[ind(p,t-1)]+ velmedz[p]*dt;
+		}
+		for(p=0;p<10;p++)
+		{
+			/*PROBLEMA AL INTENTAR ACTUALIZAR ACELERACION!*/
+			/*Ax[p]=0;
+			Ay[p]=0;
+			Az[p]=0;
+			for(i=0;i<10;i++){
+				Ax[i]= Acelereadeje(i,t,masa, Posx, Posy, Posz);
+				Ay[i]= Acelereadeje(i,t,masa, Posy, Posx, Posz);
+				Az[i]= Acelereadeje(i,t,masa, Posz, Posx, Posy);
+			}*/
+
+			Velx[ind(p,t+1)]= velmedx[p] + 0.5*Ax[p]*dt;
+			Vely[ind(p,t+1)]= velmedy[p] + 0.5*Ay[p]*dt;
+			Velz[ind(p,t+1)]= velmedz[p] + 0.5*Az[p]*dt;
 		}
 
 	}
+
+	for(t=0;t<time;t++){
+		printf("%f,%f,%f\n", Posx[t], Posy[t], Posz[t]);
+	}
+	
 
 	return 0;
 	}
@@ -114,10 +141,11 @@ int ind(int i, int t ){
 float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra){
 	int ii;
 	float sum=0;
-	float r;
+	double r;
 	for(ii=0;ii<10;ii++){
 		
-		r = pow((pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0)),1.5);
+		r = pow((pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0))+0.01,1.5);
+
 		if(ii!=i){
 			sum += G*m[ind(ii,j)]*(midim[ind(i,j)]-midim[ind(ii,j)])/r;
 		}
