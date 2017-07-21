@@ -6,7 +6,7 @@ from matplotlib import cm
 
 a =0
 b =30.0
-puntos= 30
+puntos= 300
 dx = (b-a)/(puntos-1)
 dy = (b-a)/(puntos-1)
 c=1.0
