@@ -6,7 +6,7 @@ from matplotlib import cm
 
 a =0
 b =30.0
-puntos= 300
+puntos= 30
 dx = (b-a)/(puntos-1)
 dy = (b-a)/(puntos-1)
 c=1.0
@@ -18,7 +18,7 @@ iteraciones = 60/dt
 x = np.linspace(a,b, puntos)
 y = np.linspace(a,b, puntos)
 
-fig = plt.figure()
+
 #Matriz con ampitudes
 amplitud0 = np.zeros((puntos, puntos))
 
@@ -52,9 +52,7 @@ amplitud1[:,-1]=0
 amplitud1[(puntos/3)*2][:(puntos/2)-hueco]= 0
 amplitud1[(puntos/3)*2][(puntos/2)+hueco:]= 0
 
-#i es 1:-1
-#i+1 es 2:
-#i-1 es 0:-2
+#Condicion de dy y dx
 for i in range(1,puntos-1):
 	for j in range(1,puntos-1):
 		amplitud1[i,j]= amplitud0[i,j]+ 0.5*r*(amplitud0[i+1,j]-2*amplitud0[i,j]+amplitud0[i-1,j]) + 0.5*r*(amplitud0[i,j+1]-2*amplitud0[i,j]+amplitud0[i, j-1]) 
@@ -92,55 +90,49 @@ while t<int(iteraciones):
 	amplitud1 = np.copy(amplitudFinal)
 	AinTime.append(amplitud1)
 	t+=1
+
 X,Y = np.meshgrid(x,y)
 
 #para t=30
 itPara30 = 30/dt
-fig1 = plt.figure(figsize=plt.figaspect(2.))
-fig1.suptitle('Cuando t=30')
+fig = plt.figure()
 
-ax = fig1.add_subplot(2,1,1, projection='3d')
+ax = fig.add_subplot(111, projection='3d')
 linea = ax.plot_surface(X,Y, AinTime[int(itPara30)],rstride=1, cstride=1, cmap = cm.winter)
-fig1.colorbar(linea, shrink =0.5, aspect = 5)
+cbar = plt.colorbar(linea)
+cbar.set_label('Amplitud de la onda', rotation=270)
 ax.set_zlim(-2,1)
-
-ax = fig1.add_subplot(2,1,2)
-ax.imshow(AinTime[int(itPara30)], cmap=cm.winter)
-cM = ax.pcolor(AinTime[int(itPara30)], cmap=cm.winter)
-cbar = plt.colorbar(cM)
-cbar.set_label('Amplitud onda', rotation=270)
 plt.savefig('Onda30.pdf')
 plt.close()
 
 #para t=60
-fig2 = plt.figure(figsize=plt.figaspect(2.))
-fig2.suptitle('Cuando t=60')
-
-ax = fig2.add_subplot(2,1,1, projection='3d')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 linea = ax.plot_surface(X,Y, AinTime[int(iteraciones)],rstride=1, cstride=1, cmap= cm.winter)
-fig2.colorbar(linea, shrink =0.5, aspect = 5)
+cbar = plt.colorbar(linea)
+cbar.set_label('Amplitud de la onda', rotation=270)
 ax.set_zlim(-2,1)
 
-ax = fig2.add_subplot(2,1,2)
-ax.imshow(AinTime[int(iteraciones)], cmap= cm.winter)
-cM = ax.pcolor(AinTime[int(itPara30)], cmap=cm.winter)
-cbar = plt.colorbar(cM)
-cbar.set_label('Amplitud onda', rotation=270)
 plt.savefig('Onda60.pdf')
 plt.close()
 
 
-imAmp =[]
-for i in range(int(iteraciones)):
-	im = plt.imshow(AinTime[i], cmap= cm.winter)
-	imAmp.append([im])
 
-anim = animation.ArtistAnimation(fig, imAmp, interval =20, blit = True, repeat_delay=1000)
-anim.save('Onda.mp4')
+fig2 = plt.figure()
+def animar(i):
+	amplitud = AinTime[i]
+	ax.clear()
+	line = plt.imshow(amplitud, cmap = cm.winter, extent = (0,30,0,30))
+	return line,
+anim = animation.FuncAnimation(fig2, animar, int(iteraciones), interval = 30, blit = False)
+anim.save('Onda.mp4', writer = 'ffmpeg' )
 
+#for i in range(int(iteraciones)):
+#	im = plt.imshow(AinTime[i], cmap= cm.winter)
+#	imAmp.append([im])
 
-
-
+#anim = animation.ArtistAnimation(fig2, imAmp, interval =80, blit = True, repeat=False)
+#anim.save('Onda.mp4')
 
 
 
