@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #define G 39.4784176044
-#define time 26000 /*Tiempo teniendo dependiendo de mi dt*/
+#define time 26000 /*260 años teniendo dependiendo de mi dt*/
 
 float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra);
 int ind(int i, int j );
@@ -39,6 +39,7 @@ int main(void)
 	delim = ",";
 	int item =0;
 	float val;
+	float conv = 1.9891E30;
 	char filename[100]="coordinates.csv";
 	in = fopen(filename, "r");
 	while(fgets(planetas, n, in))
@@ -48,13 +49,14 @@ int main(void)
 			while(token!=NULL)
 			{
 				val = atof(token);
-				if(item==1){masa[m]=val;}
+				/*Cambio de unidades de kg a masas solares*/
+				if(item==1){masa[m]=val/conv;}
 				else if(item==2){Posx[m]=val;}
 				else if(item==3){Posy[m]=val;}	
 				else if(item==4){Posz[m]=val;}
 				else if(item==5){Velx[m]=val;}
-				else if(item==5){Vely[m]=val;}
-				else if(item==5){Velz[m]=val;}
+				else if(item==6){Vely[m]=val;}
+				else if(item==7){Velz[m]=val;}
 				token = strtok(NULL,delim);
 				item ++;
 			}
@@ -64,21 +66,15 @@ int main(void)
 	fclose(in);
 
 
-	/*Cambio de unidades de la masa*/
-	for(i=0;i<10;i++){
-		float conv = 1.9891E30;
-		masa[i]= masa[i]/conv;
-	}
 
-	
 	/*Metodo de LeapFrog*/
 	for(t=1;t<time;t++)
 	{	
 		for(p=0;p<10;p++)
 		{
 			velmedx[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posx, Posy, Posz)*dt;
-			velmedy[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posy, Posx, Posz)*dt;
-			velmedz[p]= Velx[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posz, Posx, Posy)*dt;
+			velmedy[p]= Vely[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posy, Posx, Posz)*dt;
+			velmedz[p]= Velz[ind(p,t-1)]+ 0.5*Acelereadeje(p,t-1,masa, Posz, Posx, Posy)*dt;
 
 			Posx[ind(p,t)]= Posx[ind(p,t-1)]+ velmedx[p]*dt;
 			Posy[ind(p,t)]= Posy[ind(p,t-1)]+ velmedy[p]*dt;
@@ -94,7 +90,7 @@ int main(void)
 
 	}
 
-	for(t=0;t<time;t++){
+	for(t=0;t<time*10;t++){
 		printf("%f,%f,%f\n", Posx[t], Posy[t], Posz[t]);
 	}
 	
@@ -111,7 +107,8 @@ int ind(int i, int t ){
 
 
 
-float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra){
+float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootra)
+{
 	int ii;
 	float sum=0;
 	double r;
@@ -120,7 +117,7 @@ float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootr
 		r = pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0);
 
 		if(ii!=i){
-			sum += G*m[ii]*(midim[ind(ii,j)]-midim[ind(i,j)])/pow(r,1.5);
+			sum += -G*m[ii]*(midim[ind(ii,j)]-midim[ind(i,j)])/pow(r,1.5);
 		}
 	}
 	return sum;
