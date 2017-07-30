@@ -117,7 +117,7 @@ float Acelereadeje(int i, int j,float *m, float *midim, float *otra, float *ootr
 		r = pow((midim[ind(i,j)]-midim[ind(ii,j)]),2.0) + pow((otra[ind(i,j)]-otra[ind(ii,j)]),2.0) + pow((ootra[ind(i,j)]-ootra[ind(ii,j)]),2.0);
 
 		if(ii!=i){
-			sum += -G*m[ii]*(midim[ind(ii,j)]-midim[ind(i,j)])/pow(r,1.5);
+			sum += G*m[ii]*(midim[ind(ii,j)]-midim[ind(i,j)])/pow(r,1.5);
 		}
 	}
 	return sum;
